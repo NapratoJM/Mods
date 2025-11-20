@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<title>January</title>
+	<style>
+		:root{
+			--bg:#f4f7fb;
+			--card:#ffffff;
+			--accent1:#6C63FF;
+			--accent2:#8BD0FF;
+			--muted:#7b8794;
+			--weekday-bg:#eef5ff;
+			--today:#ffd9a8;
+			--holiday:#ffd6e0;
+			--radius:12px;
+			--shadow: 0 8px 20px rgba(40,50,80,0.08);
+			font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+		}
+
+		html,body{
+			height:100%;
+			margin:0;
+			background:
+				linear-gradient(180deg, rgba(140,155,255,0.06) 0%, rgba(139,208,255,0.02) 35%),
+				var(--bg);
+			color:#233047;
+			-webkit-font-smoothing:antialiased;
+			-moz-osx-font-smoothing:grayscale;
+		}
+
+		.container{
+			max-width:800px;
+			margin:36px auto;
+			padding:20px;
+		}
+
+		.calendar-card{
+			background:var(--card);
+			border-radius:var(--radius);
+			box-shadow:var(--shadow);
+			overflow:hidden;
+			border:1px solid rgba(36,50,80,0.04);
+		}
+
+		.header{
+			display:flex;
+			align-items:center;
+			justify-content:space-between;
+			padding:18px 22px;
+			background:linear-gradient(90deg,var(--weekday-bg),transparent);
+			gap:12px;
+		}
+
+		.nav{
+			display:flex;
+			align-items:center;
+			gap:8px;
+		}
+
+		.nav a{
+			display:inline-grid;
+			place-items:center;
+			width:44px;
+			height:44px;
+			border-radius:10px;
+			text-decoration:none;
+			color:var(--accent1);
+			font-size:20px;
+			font-weight:600;
+			border:1px solid rgba(108,99,255,0.12);
+			background:linear-gradient(180deg, rgba(108,99,255,0.06), transparent);
+			transition:transform .12s ease, box-shadow .12s ease;
+		}
+
+		.nav a:active{ transform:translateY(1px); }
+		.nav a:hover{ transform:translateY(-3px); box-shadow: 0 6px 18px rgba(108,99,255,0.08); }
+
+		.title{
+			flex:1;
+			text-align:center;
+			font-size:26px;
+			letter-spacing:2px;
+			font-weight:700;
+			color:#263149;
+		}
+
+		.header-right{
+			display:flex;
+			flex-direction:column;
+			align-items:flex-end;
+			gap:6px;
+		}
+
+		.sub{
+			font-size:12px;
+			color:var(--muted);
+		}
+
+		.calendar{
+			width:100%;
+			border-collapse:collapse;
+			table-layout:fixed;
+		}
+
+		.calendar th, .calendar td{
+			padding:12px 6px;
+			text-align:center;
+			vertical-align:middle;
+			border-right:1px solid rgba(36,50,80,0.04);
+			border-bottom:1px solid rgba(36,50,80,0.04);
+			height:80px;
+			position:relative;
+		}
+
+		.calendar th{
+			background:var(--weekday-bg);
+			font-weight:700;
+			color:#42506a;
+			font-size:13px;
+		}
+
+		.calendar td{
+			background:transparent;
+			font-size:16px;
+			color:#263149;
+			transition:background .12s ease, transform .12s ease;
+		}
+
+		.calendar tr:last-child td{ border-bottom: none; }
+		.calendar td:nth-child(7), .calendar th:nth-child(7){ /* Saturday */
+			background:linear-gradient(0deg, rgba(139,208,255,0.04), transparent);
+		}
+		.calendar td:nth-child(1), .calendar th:nth-child(1){ /* Sunday */
+			background:linear-gradient(0deg, rgba(255,214,214,0.03), transparent);
+		}
+
+		.date-num{
+			display:inline-block;
+			min-width:30px;
+			height:30px;
+			line-height:30px;
+			border-radius:8px;
+			font-weight:600;
+		}
+
+		.calendar td:hover .date-num{
+			transform:translateY(-6px);
+			box-shadow:0 8px 18px rgba(22,40,80,0.06);
+		}
+
+		.empty{
+			color:rgba(34,48,71,0.18);
+		}
+
+		.today .date-num{
+			background:linear-gradient(180deg,var(--today), #fff2d9);
+			color:#633c00;
+			box-shadow:0 6px 16px rgba(255,160,60,0.12);
+			border:1px solid rgba(255,160,60,0.2);
+		}
+
+		/* small event dot */
+		.event{
+			position:absolute;
+			bottom:8px;
+			left:50%;
+			transform:translateX(-50%);
+			width:8px;
+			height:8px;
+			border-radius:50%;
+			background:var(--accent1);
+			box-shadow:0 2px 6px rgba(108,99,255,0.18);
+		}
+
+		.legend{
+			display:flex;
+			gap:12px;
+			padding:12px 18px;
+			align-items:center;
+			justify-content:flex-end;
+			background:linear-gradient(180deg, transparent, rgba(14,26,50,0.02));
+			font-size:13px;
+			color:var(--muted);
+		}
+
+		.legend .item{
+			display:flex;
+			align-items:center;
+			gap:8px;
+		}
+		.legend .swatch{
+			width:12px;
+			height:12px;
+			border-radius:3px;
+		}
+
+		/* Responsive: on very small screens, convert table into grid for better touchability */
+		@media (max-width:560px){
+			.header{ padding:12px; }
+			.title{ font-size:20px; }
+			.container{ padding:12px; }
+			.calendar th, .calendar td{ padding:10px 4px; height:68px; font-size:14px; }
+		}
+	</style>
+</head>
+<body>
+	<div class="container">
+		<div class="calendar-card" role="application" aria-label="January calendar">
+			<div class="header">
+				<div class="nav" aria-hidden="false">
+					<a href="march.html" title="Previous month" aria-label="Previous month">&lt;</a>
+				</div>
+
+				<div class="title" aria-live="polite">JANUARY</div>
+
+				<div class="header-right">
+					<div class="sub">2025</div>
+					<div style="font-size:12px;color:var(--muted);">Your monthly view</div>
+				</div>
+			</div>
+
+			<table class="calendar" role="grid" aria-labelledby="month">
+				<thead>
+					<tr>
+						<th scope="col">SUN</th>
+						<th scope="col">MON</th>
+						<th scope="col">TUE</th>
+						<th scope="col">WED</th>
+						<th scope="col">THU</th>
+						<th scope="col">FRI</th>
+						<th scope="col">SAT</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td class="empty" aria-disabled="true"></td>
+						<td class="empty" aria-disabled="true"></td>
+						<td class="empty" aria-disabled="true"></td>
+						<td><span class="date-num">1</span></td>
+						<td><span class="date-num">2</span></td>
+						<td><span class="date-num">3</span></td>
+						<td><span class="date-num">4</span></td>
+					</tr>
+					<tr>
+						<td><span class="date-num">5</span></td>
+						<td><span class="date-num">6</span></td>
+						<td><span class="date-num">7</span></td>
+						<td><span class="date-num">8</span></td>
+						<td><span class="date-num">9</span></td>
+						<td><span class="date-num">10</span></td>
+						<td><span class="date-num">11</span></td>
+					</tr>
+					<tr>
+						<td><span class="date-num">12</span></td>
+						<td><span class="date-num">13</span></td>
+						<td><span class="date-num">14</span></td>
+						<td><span class="date-num">15</span></td>
+						<td><span class="date-num">16</span></td>
+						<td><span class="date-num">17</span></td>
+						<td><span class="date-num">18</span></td>
+					</tr>
+					<tr>
+						<td><span class="date-num">19</span></td>
+						<td><span class="date-num">20</span></td>
+						<td><span class="date-num">21</span></td>
+						<td><span class="date-num">22</span></td>
+						<td><span class="date-num">23</span></td>
+						<td><span class="date-num">24</span></td>
+						<td><span class="date-num">25</span></td>
+					</tr>
+					<tr>
+						<td><span class="date-num">26</span></td>
+						<td><span class="date-num">27</span></td>
+						<td><span class="date-num">28</span></td>
+						<td><span class="date-num">29</span></td>
+						<td><span class="date-num">30</span></td>
+						<td><span class="date-num">31</span></td>
+						<td class="empty" aria-disabled="true"></td>
+					</tr>
+				</tbody>
+			</table>
+
+			<div class="legend" aria-hidden="true">
+				<div class="item"><span class="swatch" style="background:var(--today)"></span> Today</div>
+				<div class="item"><span class="swatch" style="background:var(--accent1)"></span> Event</div>
+			</div>
+		</div>
+	</div>
+
+	<script>
+		(function(){
+			const now = new Date();
+			const month = now.getMonth(); // 0 = Jan
+			const day = now.getDate();
+
+			if(month === 0){
+				const nums = Array.from(document.querySelectorAll('.date-num'));
+				for(const el of nums){
+					if(parseInt(el.textContent,10) === day){
+						const td = el.closest('td');
+						if(td){
+							td.classList.add('today');
+							td.setAttribute('aria-current','date');
+							td.setAttribute('title','Today');
+						}
+						break;
+					}
+				}
+			}
+			const demoDate = 14;
+			const demoEl = Array.from(document.querySelectorAll('.date-num')).find(x => parseInt(x.textContent,10) === demoDate);
+			if(demoEl){
+				const dot = document.createElement('span');
+				dot.className = 'event';
+				demoEl.closest('td').appendChild(dot);
+				demoEl.closest('td').setAttribute('aria-label','Event on 14');
+			}
+		})();
+	</script>
+</body>
+</html>
